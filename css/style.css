@@ -1,0 +1,32 @@
+.input-file {
+	height: 100%;
+	left: 0;
+	position: absolute;
+	opacity: 0;
+	top: 0;
+	width: 100%;
+}
+
+.fileinput-button {
+	position: relative;
+}
+
+.label {
+	color: #999;
+}
+
+.mrt-20 {
+	margin-top: 20px;
+}
+
+#files {
+	float: right;
+	width:128px;
+	height:128px;
+	position: relative;
+}
+
+#showImage img {
+	float: left;
+	max-width: 400px;
+}

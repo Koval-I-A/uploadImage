@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/croppic.css" rel="stylesheet">
+	<link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadFile">Upload avatar</button>
+		<input type="hidden" id="hiddenInput">
+		<div id="finishImg"></div>
+	</div>
+
+	<div class="modal fade bs-example-modal-lg" id="uploadFile">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Upload avatar</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-5">
+						<label class="label">From computer</label>
+						<span class="btn btn-block btn-default fileinput-button" id="btnUpload">
+							<span>Choose file</span>
+						</span>
+					</div>
+					<div class="col-md-5">
+						<label class="label" for="inputUrl">Upload from internet</label>
+						<input type="text" class="form-control" id="inputUrl" placeholder="http://">
+						<label class="label">Minimal size 186x186px, Maximal file size 5mb.</label>
+					</div>
+					<div class="col-md-2">
+						<button id="buttonUrl" class="btn btn-block btn-default mrt-20">Upload</button>
+					</div>
+				</div>
+				<div class="clearfix">
+					<div id="showImage"></div>
+					<div id="files"></div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	</div>
+
+
+
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/croppic.js"></script>
+
+	<script src="/js/app.js"></script>
+
+</body>
+</html>
