@@ -1,53 +1,140 @@
 $(document).ready(function() {
-	'use strict';
-	var _URL = window.URL || window.webkitURL;
+    var jcrop_api,
+        boundx,
+        boundy;
 
-	var croppicContaineroutputOptions = {
-			uploadUrl:'img_save_to_file.php',
-			cropUrl:'img_crop_to_file.php', 
-			customUploadButtonId:'btnUpload',
-			outputUrlId:'hiddenInput',
-			loaderHtml:'<div class="loader bubblingG"><span id="bubblingG_1"></span><span id="bubblingG_2"></span><span id="bubblingG_3"></span></div> ',
-			onBeforeImgUpload: function(){
-				if ($("#files_imgUploadField")[0].files.length) {
-					var file = $("#files_imgUploadField")[0].files[0],
-						img = new Image();
-						img.onload = function() {
-							if (this.width < 128 || this.height < 128 || file.size > 1000000) {
-								alert('File not accept');
-								cropContaineroutput.reset();
-							};
-						};
-						img.src = _URL.createObjectURL(file);
-				}
-			},
-			onAfterImgUpload: function(){
-				$('#showImage').html('<img src=' + $(this)[0].imgUrl + '>');
-				$('#inputUrl').val('');
-				$(this)[0].options.loadPicture = '';
-			},
-			onAfterImgCrop:function(){
-				$('#finishImg').html('<img src="/' + $('#hiddenInput').val() + '">');
-				$('#uploadFile').modal('hide');
-			},
-			onError:function(errormessage){ console.log('onError:'+errormessage) }
+	var initJcrop = function (boundx, boundy){
+	    var $preview = $('#preview-pane'),
+	        $pcnt = $('#preview-pane .preview-container'),
+	        $pimg = $('#preview-pane .preview-container img'),
+
+	        xsize = $pcnt.width(),
+	        ysize = $pcnt.height();
+
+	    $('#showImage, #sendData').show();
+	    
+	    $('#target').Jcrop({
+	      	onChange: updatePreview,
+	      	onSelect: updateCoords,
+	      	aspectRatio: xsize / ysize,
+	      	boxWidth: 450,
+	      	boxHeight: 450
+	    }, function() {
+	      	boundx = boundx;
+	      	boundy = boundy;
+
+	      	jcrop_api = this;
+
+	      	$preview.appendTo(jcrop_api.ui.holder);
+	    });
+
+		function updateCoords(c) {
+			$('#x').val(c.x);
+			$('#y').val(c.y);
+			$('#w').val(c.w);
+			$('#h').val(c.h);
+		}
+
+	    function updatePreview(c) {
+	      	if (parseInt(c.w) > 0) {
+	        	var rx = xsize / c.w;
+	        	var ry = ysize / c.h;
+
+	        	$pimg.css({
+	          		width: Math.round(rx * boundx) + 'px',
+	          		height: Math.round(ry * boundy) + 'px',
+	          		marginLeft: '-' + Math.round(rx * c.x) + 'px',
+	          		marginTop: '-' + Math.round(ry * c.y) + 'px'
+	        	});
+	      	}
+	    };
+
+  	};
+
+	var readURL = function (input) {
+	    if (input.files && input.files[0]) {
+	    	var boundx, boundy;
+	        var reader = new FileReader();
+
+	        reader.onload = function (file) {
+				var image = new Image();
+				    image.src = file.target.result;
+
+				    image.onload = function() {
+				    	boundx = this.width;
+				    	boundy = this.height;
+				        if (file.total < 5000000 && this.width > 128 && this.height > 128) {
+				        	jcrop_api.release();
+				            $('#target, #jcropPreview').attr('src', file.target.result);
+		            		$('#photo').val(file.target.result);
+				            jcrop_api.setImage(file.target.result);
+				        } else {
+				        	alert('File not accept');
+				        }
+				    };
+	        }
+
+	        reader.readAsDataURL(input.files[0]);
+
+	        initJcrop(boundx, boundy);
+	    }
 	}
-	var cropContaineroutput = new Croppic('files', croppicContaineroutputOptions);
 
-	$('#buttonUrl').on('click', function() {
-		var img = new Image();
-			img.onload = function() {
-				if (this.width < 128 || this.height < 128) {
-					alert('File not accept');
-					cropContaineroutput.reset();
-				} else {
-					var croppicContaineroutputOptionsUrl = croppicContaineroutputOptions;
-						croppicContaineroutputOptionsUrl.loadPicture = $('#inputUrl').val();
-
-					var cropContaineroutputUrl = new Croppic('files', croppicContaineroutputOptionsUrl);
-				};
-			};
-			img.src = $('#inputUrl').val();
+	$("#inputFile").change(function(){
+	    readURL(this);
 	});
 
+	$('#buttonUrl').on('click', function() {
+	    	var boundx, boundy;
+
+			function toDataUrl(url, callback, outputFormat){
+			    var img = new Image();
+			    img.crossOrigin = '';
+			    img.onload = function() {
+			        var canvas = document.createElement('CANVAS');
+			        var ctx = canvas.getContext('2d');
+			        var dataURL;
+			        canvas.height = this.height;
+			        canvas.width = this.width;
+			    	boundx = this.width;
+			    	boundy = this.height;
+			        ctx.drawImage(this, 0, 0);
+			        dataURL = canvas.toDataURL(outputFormat);
+					if (canvas.height < 128 || canvas.width < 128) {
+						alert('File not accept');
+					} else {
+				        callback(dataURL);
+					};
+			        canvas = null; 
+			    };
+			    img.src = url;
+			}
+			toDataUrl($('#inputUrl').val(), function(base64Img){
+			    if (base64Img.length < 5000000) {
+		        	initJcrop(boundx, boundy);
+		        	
+		            $('#target, #jcropPreview').attr('src', base64Img);
+		            $('#photo').val(base64Img);
+		            jcrop_api.setImage(base64Img);
+	            }
+			});
+
+	});
+
+	$('#sendData').on('click', function() {
+		$('#uploadFile').modal('hide');
+		$.ajax({
+			url: '/crop.php',
+			type: 'POST',
+			data: {
+				x: $('#x').val(),
+				y: $('#y').val(),
+				w: $('#w').val(),
+				h: $('#h').val(),
+				photo: $('#photo').val()
+			},
+			success:function(data){
+			}
+		});
+	});
 });

@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Document</title>
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/css/croppic.css" rel="stylesheet">
+	<link href="/css/jquery.Jcrop.min.css" rel="stylesheet">
 	<link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
@@ -15,7 +15,7 @@
 	</div>
 
 	<div class="modal fade bs-example-modal-lg" id="uploadFile">
-	  <div class="modal-dialog">
+	  <div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -26,6 +26,7 @@
 					<div class="col-md-5">
 						<label class="label">From computer</label>
 						<span class="btn btn-block btn-default fileinput-button" id="btnUpload">
+							<input type="file" id="inputFile" class="input-file" accept="image/jpg, image/png">
 							<span>Choose file</span>
 						</span>
 					</div>
@@ -39,10 +40,27 @@
 					</div>
 				</div>
 				<div class="clearfix">
-					<div id="showImage"></div>
-					<div id="files"></div>
+					<div id="showImage">
+						<img src="" id="target">
+
+						<div id="preview-pane">
+						    <div class="preview-container">
+						      	<img src="" id="jcropPreview" class="jcrop-preview">
+						    </div>
+						</div>
+					</div>
 				</div>
+
+                <input type="hidden" id="x" name="x">
+                <input type="hidden" id="y" name="y">
+                <input type="hidden" id="w" name="w">
+                <input type="hidden" id="h" name="h">
+                <input type="hidden" id="photo" name="photo">
 			</div>
+			<div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="button" class="btn btn-primary" id="sendData">Save</button>
+		    </div>
 		</div>
 	  </div>
 	</div>
@@ -51,7 +69,7 @@
 
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script src="/js/bootstrap.min.js"></script>
-	<script src="/js/croppic.js"></script>
+	<script src="/js/jquery.Jcrop.js"></script>
 
 	<script src="/js/app.js"></script>
 

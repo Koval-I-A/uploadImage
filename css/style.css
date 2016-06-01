@@ -19,14 +19,29 @@
 	margin-top: 20px;
 }
 
-#files {
-	float: right;
-	width:128px;
-	height:128px;
-	position: relative;
+#showImage {
+	display: none;
+	min-height: 250px;
 }
 
-#showImage img {
-	float: left;
-	max-width: 400px;
+#sendData {
+	display: none;
+}
+
+.jcrop-keymgr {
+	display: none !important;
+}
+
+.jcrop-holder #preview-pane {
+  display: block;
+  position: absolute;
+  z-index: 2000;
+  right: -280px;
+  background-color: white;
+}
+
+#preview-pane .preview-container {
+  width: 250px;
+  height: 250px;
+  overflow: hidden;
 }
